@@ -1,0 +1,22 @@
+{
+    "name": "mike/module-utils",
+    "description": "Helper module",
+    "type": "magento2-module",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Michael",
+            "email": "michael@likipe.se"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {},
+    "autoload": {
+        "files": [
+            "registration.php"
+        ],
+        "psr-4": {
+            "Mike\\Utils\\": ""
+        }
+    }
+}
