@@ -12,13 +12,17 @@ use Symfony\Component\Console\Output\OutputInterface;
 class Product extends Command
 {
     use \Mike\Utils\Helper\ObjectManagerTrait;
+    use \Mike\Utils\Helper\LoggerTrait;
 
     const NAME_ARGUMENT = "name";
     const NAME_OPTION = "type";
 
+    private string $logFile;
+
     public function init()
     {
         $this->state = $this->getOm()->get(\Magento\Framework\App\State::class);
+        $this->logFile = BP . "/var/log/product-" . date("Ymd") . ".log";
     }
 
     /**
@@ -60,8 +64,9 @@ class Product extends Command
                     break;
             }
         } catch (\Exception $e) {
-            echo $e->getMessage() . PHP_EOL;
-//            $this->logger->error($e->getMessage());
+            $this->log($e->getMessage(), $this->logFile);
+            $this->log($e->getTraceAsString(), $this->logFile);
+            $output->writeln($e->getMessage());
         }
     }
 

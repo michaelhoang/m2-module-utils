@@ -22,7 +22,7 @@ class Product
         foreach ($skus as $sku) {
             /** @var \Magento\Catalog\Model\Product $product */
             $product = $this->getProductBySku($sku);
-            if (!$product->getId()) {
+            if (!$product || !$product->getId()) {
                 continue;
             }
             $deletedIds[] = $product->getId();
@@ -68,12 +68,10 @@ class Product
             # Delete
             foreach ($ids as $id) {
                 $cond["entity_id=?"] = $id;
-
-//                $connection->delete('catalog_product_entity', $cond);
+                $connection->delete('catalog_product_entity', $cond);
             }
 
             $transactionManager->commit();
-
         } catch (\Exception $e) {
             $transactionManager->rollBack();
             $this->log(static::DELETE_FAIL_MSG, $this->logFile);
@@ -112,7 +110,12 @@ class Product
     {
         /** @var \Magento\Framework\App\ObjectManager $om */
         $om = $this->getOm();
-        return $om->get(\Magento\Catalog\Model\ProductRepository::class)->get($sku);
+        try {
+            return $om->get(\Magento\Catalog\Model\ProductRepository::class)->get($sku);
+        } catch (\Exception $e) {
+            $this->log($e->getMessage(), $this->logFile);
+            $this->log("Sku: " . $sku, $this->logFile);
+        }
     }
 }
 
